@@ -18,10 +18,12 @@ namespace HostingApplication
 
         static QueryCompletionData()
         {
-            //typeof(QueryCompletionData).Assembly.GetManifestResourceStream();
-            BitmapImage b = new BitmapImage();
-            b.StreamSource = typeof(QueryCompletionData).Assembly.GetManifestResourceStream(typeof(QueryCompletionData).Namespace + ".Method.png");
-            MethodIcon = b;
+            MethodIcon = GetImageSourceFromResource("Method.png");
+        }
+
+        static internal ImageSource GetImageSourceFromResource(string resourceName)
+        {
+            return BitmapFrame.Create(typeof(QueryCompletionData).Assembly.GetManifestResourceStream(typeof(QueryCompletionData).Namespace + "." + resourceName));
         }
 
         public QueryCompletionData(string name, ISymbol[] symbols)
