@@ -31,7 +31,7 @@ namespace HostingApplication
             this.Width = initialSize.Width;
             this.Height = initialSize.Height;
             this.Text = text;
-            
+
             var references = new List<MetadataReference>();
 
             foreach (var assembly in assemblies.AllAssemblyNamesInContext)

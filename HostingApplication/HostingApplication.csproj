@@ -118,7 +118,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="CSharpTextBox.cs" />
     <Compile Include="QueryCompletionData.cs" />
     <Compile Include="RoslynExpressionEditorInstance.cs" />
     <Compile Include="RoslynExpressionEditorService.cs" />
@@ -169,6 +168,11 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Method.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Event.png" />
+    <EmbeddedResource Include="Field.png" />
+    <EmbeddedResource Include="Property.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
