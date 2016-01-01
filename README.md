@@ -1,4 +1,4 @@
-# WF Rehosted Designer Roslyn C# with Expression Editor
+# WF Rehosted Designer with Roslyn C# Expression Editor
 
 The rehostable designer in Workflow Foundation is limited to only allow Visual Basic expressions. This project
 is to show how it is possible to use Roslyn for C# expressions. Roslyn is used to parse the code into syntax 
