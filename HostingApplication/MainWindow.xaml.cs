@@ -13,7 +13,7 @@ namespace HostingApplication
     /// </summary>
     public partial class MainWindow : Window
     {
-        private WorkflowDesigner wd;
+        private WorkflowDesigner workflowDesigner;
         private RoslynExpressionEditorService expressionEditorService;
 
         public MainWindow()
@@ -28,19 +28,19 @@ namespace HostingApplication
         private void AddDesigner()
         {
             //Create an instance of WorkflowDesigner class.
-            this.wd = new WorkflowDesigner();
+            this.workflowDesigner = new WorkflowDesigner();
 
             //Place the designer canvas in the middle column of the grid.
-            Grid.SetColumn(this.wd.View, 1);
+            Grid.SetColumn(this.workflowDesigner.View, 1);
 
             //Load a new Sequence as default.
-            this.wd.Load(new Sequence());
+            this.workflowDesigner.Load("StartingWorkflow.xml");
 
             this.expressionEditorService = new RoslynExpressionEditorService();
-            this.wd.Context.Services.Publish<IExpressionEditorService>(this.expressionEditorService);
+            this.workflowDesigner.Context.Services.Publish<IExpressionEditorService>(this.expressionEditorService);
 
             //Add the designer canvas to the grid.
-            grid1.Children.Add(this.wd.View);
+            grid1.Children.Add(this.workflowDesigner.View);
         }
 
         private void RegisterMetadata()
@@ -83,8 +83,8 @@ namespace HostingApplication
 
         private void AddPropertyInspector()
         {
-            Grid.SetColumn(wd.PropertyInspectorView, 2);
-            grid1.Children.Add(wd.PropertyInspectorView);
+            Grid.SetColumn(workflowDesigner.PropertyInspectorView, 2);
+            grid1.Children.Add(workflowDesigner.PropertyInspectorView);
         }
     }
 }

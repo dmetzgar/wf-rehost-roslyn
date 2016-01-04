@@ -20,6 +20,7 @@ namespace HostingApplication
         CompletionWindow completionWindow;
         readonly MetadataReference[] baseAssemblies;
         readonly string usingNamespaces;
+        readonly string variableDeclarations;
 
         public RoslynExpressionEditorInstance(AssemblyContextControlItem assemblies, ImportedNamespaceContextItem importedNamespaces, List<ModelItem> variables, string text, Type expressionType, Size initialSize)
         {
@@ -47,11 +48,10 @@ namespace HostingApplication
 
             usingNamespaces = string.Join("", importedNamespaces.ImportedNamespaces.Select(ns => "using " + ns + ";\n").ToArray());
 
-            string s;
-            foreach (var variable in variables)
-            {
-                s = variable.ToString();
-            }
+            variableDeclarations = string.Join("", variables.Select(v => {
+                var c = v.GetCurrentValue() as System.Activities.Variable;
+                return c.Type.FullName + " " + c.Name + ";\n";
+            }).ToArray());
         }
 
         private void TextArea_TextEntered(object sender, System.Windows.Input.TextCompositionEventArgs e)
@@ -60,7 +60,7 @@ namespace HostingApplication
             {
                 try
                 {
-                    string startString = usingNamespaces + "namespace SomeNamespace { public class NotAProgram { private void SomeMethod() { var blah = ";
+                    string startString = usingNamespaces + "namespace SomeNamespace { public class NotAProgram { private void SomeMethod() { " + variableDeclarations + "var blah = ";
                     //string endString = " } } }";
 
                     var tree = CSharpSyntaxTree.ParseText(startString + this.Text.Substring(0, this.CaretOffset));
@@ -223,7 +223,7 @@ namespace HostingApplication
 
         public string GetCommittedText()
         {
-            return "CommittedText";
+            return this.Text;
         }
 
         public bool GlobalIntellisense()
