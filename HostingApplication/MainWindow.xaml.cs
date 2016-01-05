@@ -1,4 +1,5 @@
-﻿using System.Activities.Core.Presentation;
+﻿using Microsoft.CSharp.Activities;
+using System.Activities.Core.Presentation;
 using System.Activities.Presentation;
 using System.Activities.Presentation.Toolbox;
 using System.Activities.Presentation.View;
@@ -33,11 +34,13 @@ namespace HostingApplication
             //Place the designer canvas in the middle column of the grid.
             Grid.SetColumn(this.workflowDesigner.View, 1);
 
+            this.expressionEditorService = new RoslynExpressionEditorService();
+            ExpressionTextBox.RegisterExpressionActivityEditor(new CSharpValue<string>().Language, typeof(RoslynExpressionEditor), CSharpExpressionHelper.CreateExpressionFromString);
+            ExpressionTextBox.RegisterExpressionActivityEditor(new Microsoft.VisualBasic.Activities.VisualBasicValue<string>().Language, typeof(RoslynExpressionEditor), CSharpExpressionHelper.CreateExpressionFromString);
+            this.workflowDesigner.Context.Services.Publish<IExpressionEditorService>(this.expressionEditorService);
+
             //Load a new Sequence as default.
             this.workflowDesigner.Load("StartingWorkflow.xml");
-
-            this.expressionEditorService = new RoslynExpressionEditorService();
-            this.workflowDesigner.Context.Services.Publish<IExpressionEditorService>(this.expressionEditorService);
 
             //Add the designer canvas to the grid.
             grid1.Children.Add(this.workflowDesigner.View);
