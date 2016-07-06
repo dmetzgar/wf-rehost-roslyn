@@ -109,6 +109,32 @@
             </Style.Triggers>
         </Style>
 
+        <Style x:Uid="Style_6" x:Key="borderStyle" TargetType="{x:Type Border}">
+            <Style.Triggers>
+                <DataTrigger x:Uid="DataTrigger_12" Binding="{Binding Path=IsEnabled}" Value="False">
+                    <Setter x:Uid="Setter_106" Property="Background" Value="{DynamicResource WorkflowViewElementBackground}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        
+        <DataTemplate x:Uid="DataTemplate_1" x:Key="textblock">
+            <Grid x:Uid="Grid_1" DataContext="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:RoslynExpressionEditor}}}" Background="{Binding Path=Background, RelativeSource={RelativeSource AncestorType={x:Type Control}, AncestorLevel=2}}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition x:Uid="ColumnDefinition_1" Width="*"/>
+                    <ColumnDefinition x:Uid="ColumnDefinition_2" Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Border x:Uid="Border_2" Style="{StaticResource borderStyle}" Grid.Column="0"
+                  BorderBrush="{DynamicResource WorkflowViewElementBorderBrush}"
+                  BorderThickness="1,1,1,1"
+                  CornerRadius="1" HorizontalAlignment="Stretch">
+                    <TextBlock x:Uid="TextBlock_2" Style="{StaticResource textBlockStyle}" AutomationProperties.AutomationId="{Binding Path=Name}" 
+                       Focusable="True" GotKeyboardFocus="OnTextBlockGotFocus" 
+                       MouseLeftButtonDown="OnTextBlockMouseLeftButtonDown" Name="expresionTextBlock"/>
+                </Border>
+                <Rectangle x:Uid="Rectangle_2"  Style="{StaticResource errorStyle}" Grid.Column="1"/>
+            </Grid>
+        </DataTemplate>
+        
     </sape:TextualExpressionEditor.Resources>
     <Grid x:Name="grid" x:Uid="Grid_3" DataContext="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:RoslynExpressionEditor}}}" HorizontalAlignment="{Binding Path=HorizontalAlignment}" Background="{Binding Path=Background, RelativeSource={RelativeSource AncestorType={x:Type Control}, AncestorLevel=2}}">
         <Grid.ColumnDefinitions>
