@@ -33,6 +33,8 @@ namespace HostingApplication
         public RoslynExpressionEditor()
         {
             InitializeComponent();
+            this.ContentTemplate = (DataTemplate)FindResource("textblock");
+            this.innerControl.ContentTemplate = this.ContentTemplate;
             this.HintText = "Enter C# Expression";
         }
 
