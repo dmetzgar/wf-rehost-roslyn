@@ -80,13 +80,6 @@
                 </DataTrigger>
             </Style.Triggers>
         </Style>
-        <DataTemplate x:Key="readOnlyTemplate">
-            <TextBlock x:Name="textBlock" Grid.Column="0" Padding="2"             
-                ToolTip="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Text}"
-                Focusable="True" GotFocus="OnTextBlockGotFocus" Loaded="OnTextBlockLoaded"
-                MouseLeftButtonDown="OnTextBlockMouseLeftButtonDown"
-                Style="{StaticResource textBlockStyle}"/>
-        </DataTemplate>
 
         <Style x:Uid="Style_4" x:Key="errorStyle" TargetType="{x:Type Rectangle}">
             <Setter x:Uid="Setter_47" Property="Visibility" Value="Collapsed"/>
@@ -116,7 +109,25 @@
                 </DataTrigger>
             </Style.Triggers>
         </Style>
-        
+
+        <Style x:Uid="Style_5" x:Key="editorStyle" TargetType="{x:Type Control}">
+            <Setter x:Uid="Setter_90" Property="Margin" Value="4,2,4,2"/>
+            <Setter x:Uid="Setter_56" Property="ContextMenu" Value="{Binding Path=ContextMenu}"/>
+            <Setter x:Uid="Setter_57" Property="FlowDirection" Value="LeftToRight"/>
+            <Setter x:Uid="Setter_58" Property="FontFamily" Value="{Binding Path=FontFamily}"/>
+            <Setter x:Uid="Setter_59" Property="FontSize" Value="{Binding Path=FontSize}"/>
+            <Setter x:Uid="Setter_60" Property="FontStretch" Value="{Binding Path=FontStretch}"/>
+            <Setter x:Uid="Setter_61" Property="FontStyle" Value="{Binding Path=FontStyle}"/>
+            <Setter x:Uid="Setter_62" Property="FontWeight" Value="{Binding Path=FontWeight}"/>
+            <Setter x:Uid="Setter_64" Property="Language" Value="{Binding Path=Language}"/>
+            <Setter x:Uid="Setter_65" Property="SnapsToDevicePixels" Value="{Binding Path=SnapsToDevicePixels}"/>
+            <Setter x:Uid="Setter_92" Property="Height" Value="{Binding Path=Height}"/>
+            <Setter x:Uid="Setter_94" Property="MinHeight" Value="{Binding Path=MinHeight}" />
+            <Setter x:Uid="Setter_95" Property="MaxHeight" Value="{Binding Path=MaxHeight}" />
+            <Setter x:Uid="Setter_98" Property="VerticalAlignment" Value="{Binding Path=VerticalContentAlignment}" />
+            <Setter x:Uid="Setter_99" Property="ClipToBounds" Value="{Binding Path=ClipToBounds, RelativeSource={RelativeSource AncestorType={x:Type local:RoslynExpressionEditor}}}" />
+        </Style>
+
         <DataTemplate x:Uid="DataTemplate_1" x:Key="textblock">
             <Grid x:Uid="Grid_1" DataContext="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:RoslynExpressionEditor}}}" Background="{Binding Path=Background, RelativeSource={RelativeSource AncestorType={x:Type Control}, AncestorLevel=2}}">
                 <Grid.ColumnDefinitions>
@@ -128,13 +139,28 @@
                   BorderThickness="1,1,1,1"
                   CornerRadius="1" HorizontalAlignment="Stretch">
                     <TextBlock x:Uid="TextBlock_2" Style="{StaticResource textBlockStyle}" AutomationProperties.AutomationId="{Binding Path=Name}" 
-                       Focusable="True" GotKeyboardFocus="OnTextBlockGotFocus" 
+                       Focusable="True" GotKeyboardFocus="OnGotTextBlockFocus" 
                        MouseLeftButtonDown="OnTextBlockMouseLeftButtonDown" Name="expresionTextBlock"/>
                 </Border>
                 <Rectangle x:Uid="Rectangle_2"  Style="{StaticResource errorStyle}" Grid.Column="1"/>
             </Grid>
         </DataTemplate>
-        
+
+        <DataTemplate x:Uid="DataTemplate_3" x:Key="expressioneditor">
+            <Grid x:Uid="Grid_3" DataContext="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:RoslynExpressionEditor}}}" HorizontalAlignment="{Binding Path=HorizontalAlignment}" Background="{Binding Path=Background, RelativeSource={RelativeSource AncestorType={x:Type Control}, AncestorLevel=2}}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition x:Uid="ColumnDefinition_5" Width="*"/>
+                    <ColumnDefinition x:Uid="ColumnDefinition_6" Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Border x:Uid="Border_5" Grid.Column="0" CornerRadius="1"
+                 BorderBrush="{DynamicResource WorkflowViewElementBorderBrush}"
+                 BorderThickness="1,1,1,1"
+                 Loaded="OnEditorLoaded" Unloaded="OnEditorUnloaded" Margin="0,0,0,0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                 GotKeyboardFocus="OnGotEditingFocus"  Background="{DynamicResource DesignerViewBackground}" />
+                <Rectangle x:Uid="Rectangle_6" Grid.Column="1" Style="{StaticResource errorStyle}"/>
+            </Grid>
+        </DataTemplate>
+
     </sape:TextualExpressionEditor.Resources>
     <Grid x:Name="grid" x:Uid="Grid_3" DataContext="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:RoslynExpressionEditor}}}" HorizontalAlignment="{Binding Path=HorizontalAlignment}" Background="{Binding Path=Background, RelativeSource={RelativeSource AncestorType={x:Type Control}, AncestorLevel=2}}">
         <Grid.ColumnDefinitions>
