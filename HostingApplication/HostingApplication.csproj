@@ -119,13 +119,18 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="CSharpExpressionHelper.cs" />
+    <Compile Include="ExpressionHelper.cs" />
+    <Compile Include="ExpressionSelection.cs" />
+    <Compile Include="ExpressionValidationContext.cs" />
     <Compile Include="LineToHeightConverter.cs" />
+    <Compile Include="ParserContext.cs" />
     <Compile Include="QueryCompletionData.cs" />
     <Compile Include="RoslynExpressionEditor.xaml.cs">
       <DependentUpon>RoslynExpressionEditor.xaml</DependentUpon>
     </Compile>
     <Compile Include="RoslynExpressionEditorInstance.cs" />
     <Compile Include="RoslynExpressionEditorService.cs" />
+    <Compile Include="XamlUtilities.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
