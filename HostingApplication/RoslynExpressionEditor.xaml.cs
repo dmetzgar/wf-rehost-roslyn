@@ -274,7 +274,7 @@ namespace HostingApplication
                     Border border = (Border)sender;
                     // Get the references and variables in scope
                     AssemblyContextControlItem assemblies = (AssemblyContextControlItem)this.Context.Items.GetValue(typeof(AssemblyContextControlItem));
-                    List<ModelItem> declaredVariables = GetVariablesInScope(this.OwnerActivity);
+                    List<ModelItem> declaredVariables = CSharpExpressionHelper.GetVariablesInScope(this.OwnerActivity);
 
                     ImportedNamespaceContextItem importedNamespaces = this.Context.Items.GetValue<ImportedNamespaceContextItem>();
                     importedNamespaces.EnsureInitialized(this.Context);
@@ -571,17 +571,6 @@ namespace HostingApplication
 
             //raise EditorLostLogical focus - in case when some clients need to do explicit commit
             this.RaiseEvent(new RoutedEventArgs(ExpressionTextBox.EditorLostLogicalFocusEvent, this));
-        }
-
-        internal static List<ModelItem> GetVariablesInScope(ModelItem ownerActivity)
-        {
-            List<ModelItem> declaredVariables = new List<ModelItem>();
-            if (ownerActivity != null)
-            {
-                bool includeArguments = !(ownerActivity.GetCurrentValue() is ActivityBuilder);
-                //TODO: Add logic to GetVariables in Scope and add for ownerActivity 
-            }
-            return declaredVariables;
         }
 
         internal sealed class TypeToPromptTextConverter : IValueConverter
