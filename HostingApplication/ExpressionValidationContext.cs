@@ -42,13 +42,13 @@ namespace HostingApplication
             }
 
             this.ValidatedExpressionText = this.ExpressionText;
-            if (etb.expressionEditorInstance != null)
+            if (etb.ExpressionEditorInstance != null)
             {
-                this.ExpressionText = etb.expressionEditorInstance.Text;
+                this.ExpressionText = etb.ExpressionEditorInstance.Text;
             }
-            else if (etb.editingTextBox != null)
+            else if (etb.EditingTextBox != null)
             {
-                this.ExpressionText = etb.editingTextBox.Text;
+                this.ExpressionText = etb.EditingTextBox.Text;
             }
             else
             {
