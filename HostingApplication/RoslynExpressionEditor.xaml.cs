@@ -28,7 +28,7 @@ namespace HostingApplication
 
         double blockHeight = double.NaN;
         double blockWidth = double.NaN;
-        private const int ValidationWaitTime = 800;
+        private const int validationWaitTime = 800;
 
         bool isEditorLoaded = false;
         string previousText = null;
@@ -267,11 +267,11 @@ namespace HostingApplication
             }
         }
 
-        public static int ValidationWaitTime1
+        public static int ValidationWaitTime
         {
             get
             {
-                return ValidationWaitTime;
+                return validationWaitTime;
             }
         }
 
@@ -599,7 +599,7 @@ namespace HostingApplication
                             return;
                         }
 
-                        Thread.Sleep(ValidationWaitTime1);
+                        Thread.Sleep(ValidationWaitTime);
                         args.Result = validationContext;
                     }
 
