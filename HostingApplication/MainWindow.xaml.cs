@@ -1,8 +1,10 @@
-﻿using System.Activities.Core.Presentation;
+﻿using Microsoft.CSharp.Activities;
+using System.Activities.Core.Presentation;
 using System.Activities.Presentation;
 using System.Activities.Presentation.Toolbox;
 using System.Activities.Presentation.View;
 using System.Activities.Statements;
+using System.Runtime.Versioning;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -33,11 +35,17 @@ namespace HostingApplication
             //Place the designer canvas in the middle column of the grid.
             Grid.SetColumn(this.workflowDesigner.View, 1);
 
+            this.expressionEditorService = new RoslynExpressionEditorService();
+            ExpressionTextBox.RegisterExpressionActivityEditor(new CSharpValue<string>().Language, typeof(RoslynExpressionEditor), CSharpExpressionHelper.CreateExpressionFromString);
+            this.workflowDesigner.Context.Services.Publish<IExpressionEditorService>(this.expressionEditorService);
+
+            //To avoid loading the default VB expression editor
+            DesignerConfigurationService configurationService = this.workflowDesigner.Context.Services.GetService<DesignerConfigurationService>();
+            configurationService.TargetFrameworkName = new FrameworkName(".NETFramework", new System.Version(4, 5));
+            configurationService.LoadingFromUntrustedSourceEnabled = true;
+
             //Load a new Sequence as default.
             this.workflowDesigner.Load("StartingWorkflow.xml");
-
-            this.expressionEditorService = new RoslynExpressionEditorService();
-            this.workflowDesigner.Context.Services.Publish<IExpressionEditorService>(this.expressionEditorService);
 
             //Add the designer canvas to the grid.
             grid1.Children.Add(this.workflowDesigner.View);
