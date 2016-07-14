@@ -108,7 +108,7 @@ namespace HostingApplication
             List<LocationReference> toReturn = new List<LocationReference>();
             if (this.baseModelItem != null)
             {
-                List<ModelItem> declaredVariables = RoslynExpressionEditor.GetVariablesInScope(this.baseModelItem);
+                List<ModelItem> declaredVariables = CSharpExpressionHelper.GetVariablesInScope(this.baseModelItem);
 
                 foreach (ModelItem modelItem in declaredVariables)
                 {

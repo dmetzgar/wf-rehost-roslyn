@@ -155,7 +155,7 @@
                 <Border x:Uid="Border_5" Grid.Column="0" CornerRadius="1"
                  BorderBrush="{DynamicResource WorkflowViewElementBorderBrush}"
                  BorderThickness="1,1,1,1"
-                 Loaded="OnEditorLoaded" Unloaded="OnEditorUnloaded" Margin="0,0,0,0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                 Loaded="OnEditorLoaded" Unloaded="OnEditorUnloaded" MouseRightButtonDown="OnEditorUnloaded" Margin="0,0,0,0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
                  GotKeyboardFocus="OnGotEditingFocus"  Background="{DynamicResource DesignerViewBackground}" />
                 <Rectangle x:Uid="Rectangle_6" Grid.Column="1" Style="{StaticResource errorStyle}"/>
             </Grid>
