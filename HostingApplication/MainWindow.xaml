@@ -1,17 +1,26 @@
 ﻿<Window x:Class="HostingApplication.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:HostingApplication"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="600">
+        Title="Rehosted Workflow Designer" Height="350" Width="600" >
+        
     <Grid x:Name="grid1">
+
+        <Menu Width="Auto" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0">
+            <MenuItem Header="File" Name="menuFile">
+                <MenuItem Header="Save As XAML" Name="menuSaveAs" 
+                    Click="SaveAs_Click" />
+                <Separator />
+            </MenuItem>
+        </Menu>
+        
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition Width="4*"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25" />
+            <RowDefinition Height="1*" />
+        </Grid.RowDefinitions>
     </Grid>
 </Window>
