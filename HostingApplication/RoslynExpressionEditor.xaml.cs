@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Activities;
+using System.Activities.Presentation;
 using System.Activities.Presentation.Expressions;
 using System.Activities.Presentation.Hosting;
 using System.Activities.Presentation.Model;
@@ -21,7 +22,6 @@ namespace HostingApplication
     public partial class RoslynExpressionEditor : TextualExpressionEditor
     {
         private static readonly DependencyProperty textProperty = DependencyProperty.Register("Text", typeof(string), typeof(RoslynExpressionEditor));
-        private static readonly DependencyProperty expressionTextProperty = DependencyProperty.Register("ExpressionText", typeof(string), typeof(RoslynExpressionEditor), new PropertyMetadata(null));
         private static readonly DependencyProperty editingStateProperty = DependencyProperty.Register("EditingState", typeof(EditingState), typeof(RoslynExpressionEditor), new PropertyMetadata(EditingState.Idle));
         private static readonly DependencyProperty hasValidationErrorProperty = DependencyProperty.Register("HasValidationError", typeof(bool), typeof(RoslynExpressionEditor), new PropertyMetadata(false));
         private static readonly DependencyProperty validationErrorMessageProperty = DependencyProperty.Register("ValidationErrorMessage", typeof(string), typeof(RoslynExpressionEditor), new PropertyMetadata(null));
@@ -32,6 +32,8 @@ namespace HostingApplication
 
         bool isEditorLoaded = false;
         string previousText = null;
+        TextBlock textBlock;
+        bool isBeginEditPending;
 
         IExpressionEditorService expressionEditorService;
         private IExpressionEditorInstance expressionEditorInstance;
@@ -121,7 +123,11 @@ namespace HostingApplication
             {
                 // Get the variables in scope
                 List<ModelItem> declaredVariables = CSharpExpressionHelper.GetVariablesInScope(OwnerActivity);
-                InferredType = ((LocationReference)(declaredVariables[0].GetCurrentValue())).Type;
+
+                if (declaredVariables.Count > 0)
+                {
+                    InferredType = ((LocationReference)(declaredVariables[0].GetCurrentValue())).Type;
+                }
             }
 
             Type resultType = ExpressionType != null ? ExpressionType : InferredType;
@@ -140,6 +146,7 @@ namespace HostingApplication
             if (Text != null)
             {
                 using (ModelEditingScope scope = OwnerActivity.BeginEdit("Property Change"))
+                if (OwnerActivity != null)
                 {
                     EditingState = EditingState.Validating;
                     // we set the expression to null
@@ -166,12 +173,6 @@ namespace HostingApplication
                     scope.Complete();
                 }
             }
-        }
-
-        internal string ExpressionText
-        {
-            get { return (string)GetValue(ExpressionTextProperty); }
-            set { SetValue(ExpressionTextProperty, value); }
         }
 
         internal bool HasErrors
@@ -206,14 +207,6 @@ namespace HostingApplication
             get
             {
                 return textProperty;
-            }
-        }
-
-        internal static DependencyProperty ExpressionTextProperty
-        {
-            get
-            {
-                return expressionTextProperty;
             }
         }
 
@@ -476,7 +469,7 @@ namespace HostingApplication
                     ImportedNamespaceContextItem importedNamespaces = Context.Items.GetValue<ImportedNamespaceContextItem>();
                     importedNamespaces.EnsureInitialized(Context);
                     //if the expression text is empty and the expression type is set, then we initialize the text to prompt text
-                    if (String.Equals(ExpressionText, string.Empty, StringComparison.OrdinalIgnoreCase) && ExpressionType != null)
+                    if (String.Equals(Text, string.Empty, StringComparison.OrdinalIgnoreCase) && ExpressionType != null)
                     {
                         Text = TypeToPromptTextConverter.GetPromptText(ExpressionType);
                     }
@@ -768,6 +761,61 @@ namespace HostingApplication
 
             //raise EditorLostLogical focus - in case when some clients need to do explicit commit
             RaiseEvent(new RoutedEventArgs(ExpressionTextBox.EditorLostLogicalFocusEvent, this));
+        }
+
+        private void OnTextBlockLoaded(object sender, RoutedEventArgs e)
+        {
+            this.textBlock = sender as TextBlock;
+            if (this.isBeginEditPending)
+            {
+                this.BeginEdit();
+            }
+        }
+
+        public override void BeginEdit()
+        {
+            if (this.textBlock != null)
+            {
+                Keyboard.Focus(this.textBlock);
+                this.isBeginEditPending = false;
+            }
+            else
+            {
+                this.isBeginEditPending = true;
+            }
+        }
+
+        protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+        {
+            switch (e.Property.Name)
+            {
+                case "Expression":
+
+                    this.OnExpressionChanged();
+                    break;
+            }
+
+            base.OnPropertyChanged(e);
+        }
+
+
+        private void OnExpressionChanged()
+        {
+            this.IsSupportedExpression = true;
+            if (this.Expression == null)
+            {
+                this.Text = null;
+            }
+            else
+            {
+                // This is a necessary work-around for design-time validation to work properly on Variable/Argument designer. For ETB in Variable/Argument designer,
+                // this.Expression is actually a FakeModelItemImpl. For non-editing scenario, when the validation is done, it actually updates the validation related
+                // attached properties of the real ModelItem. So if we hook on this.Expression.PropertyChanged directly, we cannot get the property change notification.
+                // As the result, the UI of Variable/Argument designer won't be updated when the validation status is changed.
+
+                ActivityWithResult expression = this.Expression.GetCurrentValue() as ActivityWithResult;
+                this.Text = ExpressionHelper.GetExpressionString(expression);
+            }
         }
 
         internal sealed class TypeToPromptTextConverter : IValueConverter

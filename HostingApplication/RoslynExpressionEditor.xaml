@@ -139,7 +139,7 @@
                   BorderThickness="1,1,1,1"
                   CornerRadius="1" HorizontalAlignment="Stretch">
                     <TextBlock x:Uid="TextBlock_2" Style="{StaticResource textBlockStyle}" AutomationProperties.AutomationId="{Binding Path=Name}" 
-                       Focusable="True" GotKeyboardFocus="OnGotTextBlockFocus" 
+                       Focusable="True" GotKeyboardFocus="OnGotTextBlockFocus" Loaded="OnTextBlockLoaded"
                        MouseLeftButtonDown="OnTextBlockMouseLeftButtonDown" Name="expresionTextBlock"/>
                 </Border>
                 <Rectangle x:Uid="Rectangle_2"  Style="{StaticResource errorStyle}" Grid.Column="1"/>
