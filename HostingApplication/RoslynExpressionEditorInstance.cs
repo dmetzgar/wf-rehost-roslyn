@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace HostingApplication
 {
@@ -24,6 +25,8 @@ namespace HostingApplication
         {
             this.TextArea.TextEntering += TextArea_TextEntering;
             this.TextArea.TextEntered += TextArea_TextEntered;
+            this.TextArea.LostKeyboardFocus += TextArea_LostFocus; // Need to detach events.
+
             this.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition("C#");
             this.FontFamily = new System.Windows.Media.FontFamily("Consolas");
             this.FontSize = 12;
@@ -122,6 +125,14 @@ namespace HostingApplication
             }
             // Do not set e.Handled=true.
             // We still want to insert the character that was typed.
+        }
+
+        private void TextArea_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (this.LostAggregateFocus != null)
+            {
+                this.LostAggregateFocus(sender, e);
+            }
         }
 
         #region IExpressionEditorInstance implicit
