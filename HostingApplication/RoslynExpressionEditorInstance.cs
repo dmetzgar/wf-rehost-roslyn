@@ -12,41 +12,35 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace HostingApplication
 {
     public class RoslynExpressionEditorInstance : TextEditor, IExpressionEditorInstance
     {
-        CompletionWindow completionWindow;
-        readonly MetadataReference[] baseAssemblies;
-        readonly string usingNamespaces;
-        readonly string variableDeclarations;
+        private CompletionWindow completionWindow;
+        private string variableDeclarations;
 
-        public RoslynExpressionEditorInstance(AssemblyContextControlItem assemblies, ImportedNamespaceContextItem importedNamespaces, List<ModelItem> variables, string text, Type expressionType, Size initialSize)
+        public RoslynExpressionEditorInstance()
         {
             this.TextArea.TextEntering += TextArea_TextEntering;
             this.TextArea.TextEntered += TextArea_TextEntered;
+            this.TextArea.LostKeyboardFocus += TextArea_LostFocus; // Need to detach events.
+
             this.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition("C#");
             this.FontFamily = new System.Windows.Media.FontFamily("Consolas");
             this.FontSize = 12;
+        }
+
+        public RoslynExpressionEditorInstance(Size initialSize) : this()
+        {
             this.Width = initialSize.Width;
             this.Height = initialSize.Height;
+        }
+
+        public void UpdateInstance(List<ModelItem> variables, string text)
+        {
             this.Text = text;
-
-            var references = new List<MetadataReference>();
-
-            foreach (var assembly in assemblies.AllAssemblyNamesInContext)
-            {
-                try
-                {
-                    references.Add(MetadataReference.CreateFromFile(System.Reflection.Assembly.Load(assembly).Location));
-                }
-                catch { }
-            }
-
-            baseAssemblies = references.ToArray();
-
-            usingNamespaces = string.Join("", importedNamespaces.ImportedNamespaces.Select(ns => "using " + ns + ";\n").ToArray());
 
             variableDeclarations = string.Join("", variables.Select(v => {
                 var c = v.GetCurrentValue() as System.Activities.Variable;
@@ -60,14 +54,16 @@ namespace HostingApplication
             {
                 try
                 {
-                    string startString = usingNamespaces + "namespace SomeNamespace { public class NotAProgram { private void SomeMethod() { " + variableDeclarations + "var blah = ";
+                    string startString = RoslynExpressionEditorService.Instance.UsingNamespaces 
+                        + "namespace SomeNamespace { public class NotAProgram { private void SomeMethod() { " 
+                        + variableDeclarations + "var blah = ";
                     //string endString = " } } }";
 
                     var tree = CSharpSyntaxTree.ParseText(startString + this.Text.Substring(0, this.CaretOffset));
                     var compilation = CSharpCompilation.Create(
                         "MyCompilation",
                         syntaxTrees: new[] { tree },
-                        references: baseAssemblies);
+                        references: RoslynExpressionEditorService.Instance.BaseAssemblies);
                     var semanticModel = compilation.GetSemanticModel(tree);
 
                     // Ask for symbols at the caret position.
@@ -129,6 +125,14 @@ namespace HostingApplication
             }
             // Do not set e.Handled=true.
             // We still want to insert the character that was typed.
+        }
+
+        private void TextArea_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (this.LostAggregateFocus != null)
+            {
+                this.LostAggregateFocus(sender, e);
+            }
         }
 
         #region IExpressionEditorInstance implicit
