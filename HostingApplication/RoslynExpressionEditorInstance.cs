@@ -54,51 +54,40 @@ namespace HostingApplication
             {
                 try
                 {
-                    string startString = RoslynExpressionEditorService.Instance.UsingNamespaces 
-                        + "namespace SomeNamespace { public class NotAProgram { private void SomeMethod() { " 
+                    string startString = RoslynExpressionEditorService.Instance.UsingNamespaces
+                        + "using System; using System.Collections.Generic; using System.Text; namespace SomeNamespace { public class NotAProgram { private void SomeMethod() { "
                         + variableDeclarations + "var blah = ";
-                    //string endString = " } } }";
+                    string endString = " ; } } }";
+                    string codeString = startString + this.Text.Substring(0, this.CaretOffset) + endString;
 
-                    var tree = CSharpSyntaxTree.ParseText(startString + this.Text.Substring(0, this.CaretOffset));
-                    var compilation = CSharpCompilation.Create(
-                        "MyCompilation",
-                        syntaxTrees: new[] { tree },
-                        references: RoslynExpressionEditorService.Instance.BaseAssemblies);
-                    var semanticModel = compilation.GetSemanticModel(tree);
+                    var tree = CSharpSyntaxTree.ParseText(codeString);
 
-                    // Ask for symbols at the caret position.
-                    var position = this.CaretOffset + startString.Length - 1;
-                    var token = tree.GetRoot().FindToken(position);
-                    var identifier = token.Parent;
-                    IList<ISymbol> symbols = null;
-                    if (identifier is QualifiedNameSyntax)
-                    {
-                        var semanticInfo = semanticModel.GetTypeInfo((identifier as QualifiedNameSyntax).Left);
-                        var type = semanticInfo.Type;
-                        symbols = semanticModel.LookupSymbols(position, container: type, includeReducedExtensionMethods: true);
-                    }
-                    else if (identifier is MemberAccessExpressionSyntax)
-                    {
-                        var semanticInfo = semanticModel.GetTypeInfo((identifier as MemberAccessExpressionSyntax).Expression);
-                        var type = semanticInfo.Type;
-                        symbols = semanticModel.LookupSymbols(position, container: type, includeReducedExtensionMethods: true);
-                    }
-                    else if (identifier is IdentifierNameSyntax)
-                    {
-                        var semanticInfo = semanticModel.GetTypeInfo(identifier as IdentifierNameSyntax);
-                        var type = semanticInfo.Type;
-                        symbols = semanticModel.LookupSymbols(position, container: type, includeReducedExtensionMethods: true);
-                    }
+                    var root = (CompilationUnitSyntax)tree.GetRoot();
+
+                    var compilation = CSharpCompilation.Create("CustomIntellisense")
+                                               .AddReferences(MetadataReference.CreateFromFile(typeof(object).Assembly.Location))
+                                               .AddSyntaxTrees(tree);
+
+                    var model = compilation.GetSemanticModel(tree);
+
+                    var exprString = root.FindToken(codeString.LastIndexOf('.') - 1).Parent;
+
+                    var literalInfo = model.GetTypeInfo(exprString);
+
+                    var stringTypeSymbol = (INamedTypeSymbol)literalInfo.Type;
+                    IList<ISymbol> symbols = new List<ISymbol>() { };
+                    foreach (var s in (from method in stringTypeSymbol.GetMembers() where method.DeclaredAccessibility == Accessibility.Public select method).Distinct())
+                        symbols.Add(s);
 
                     if (symbols != null && symbols.Count > 0)
                     {
                         completionWindow = new CompletionWindow(this.TextArea);
                         IList<ICompletionData> data = completionWindow.CompletionList.CompletionData;
-                        //var distinctSymbols = (from s in symbols select s.Name).Distinct();
+                        data.Clear();
                         var distinctSymbols = from s in symbols group s by s.Name into g select new { Name = g.Key, Symbols = g };
-                        foreach (var group in distinctSymbols.OrderBy(s => s.Name))
+                        foreach (var g in distinctSymbols.OrderBy(s => s.Name))
                         {
-                            data.Add(new QueryCompletionData(group.Name, group.Symbols.ToArray()));
+                            data.Add(new QueryCompletionData(g.Name, g.Symbols.ToArray()));
                         }
 
                         completionWindow.Show();
